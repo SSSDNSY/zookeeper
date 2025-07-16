@@ -1296,6 +1296,14 @@ static void log_env(zhandle_t *zh) {
 }
 
 /**
+ * Return string of "MAJOR.MINOR.PATCH"
+ */
+const char *zoo_version_str()
+{
+    return ZOO_VERSION;
+}
+
+/**
  * Create a zookeeper handle associated with the given host and port.
  */
 static zhandle_t *zookeeper_init_internal(const char *host, watcher_fn watcher,
@@ -3624,6 +3632,7 @@ static completion_list_t* do_create_completion_entry(zhandle_t *zh, int xid,
         break;
     case COMPLETION_STRING_STAT:
         c->c.string_stat_result = (string_stat_completion_t)dc;
+        break;
     case COMPLETION_ACLLIST:
         c->c.acl_result = (acl_completion_t)dc;
         break;
@@ -5112,11 +5121,11 @@ int zoo_add_auth(zhandle_t *zh,const char* scheme,const char* cert,
 
 static const char* format_endpoint_info(const struct sockaddr_storage* ep)
 {
-    static char buf[134] = { 0 };
+    static __thread char buf[134] = { 0 };
     char addrstr[INET6_ADDRSTRLEN] = { 0 };
     const char *fmtstring;
     void *inaddr;
-    char is_inet6 = 0;  // poor man's boolean
+    char is_inet6 = 0; // poor man's boolean
 #ifdef _WIN32
     char * addrstring;
 #endif
