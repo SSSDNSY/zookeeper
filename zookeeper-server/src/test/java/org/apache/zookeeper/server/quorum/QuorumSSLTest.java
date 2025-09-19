@@ -200,7 +200,7 @@ public class QuorumSSLTest extends QuorumPeerTestBase {
         // Write the truststore
         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
         trustStore.load(null, PASSWORD);
-        trustStore.setCertificateEntry(rootCertificate.getSubjectDN().toString(), rootCertificate);
+        trustStore.setCertificateEntry(rootCertificate.getSubjectX500Principal().toString(), rootCertificate);
         FileOutputStream outputStream = new FileOutputStream(truststorePath);
         trustStore.store(outputStream, PASSWORD);
         outputStream.flush();
@@ -901,6 +901,7 @@ public class QuorumSSLTest extends QuorumPeerTestBase {
             assertTrue(ClientBase.waitForServerDown("127.0.0.1:" + clientPortQp3, CONNECTION_TIMEOUT));
 
             setSSLSystemProperties();
+            System.setProperty(quorumX509Util.getSslCrlEnabledProperty(), "true");
             System.setProperty(quorumX509Util.getSslOcspEnabledProperty(), "true");
 
             X509Certificate validCertificate = buildEndEntityCert(

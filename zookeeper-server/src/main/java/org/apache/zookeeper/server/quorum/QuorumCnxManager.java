@@ -344,10 +344,7 @@ public class QuorumCnxManager {
     // can take extra time)
     private void initializeConnectionExecutor(final long mySid, final int quorumCnxnThreadsSize) {
         final AtomicInteger threadIndex = new AtomicInteger(1);
-        SecurityManager s = System.getSecurityManager();
-        final ThreadGroup group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
-
-        final ThreadFactory daemonThFactory = runnable -> new Thread(group, runnable,
+        final ThreadFactory daemonThFactory = runnable -> new Thread(runnable,
             String.format("QuorumConnectionThread-[myid=%d]-%d", mySid, threadIndex.getAndIncrement()));
 
         this.connectionExecutor = new ThreadPoolExecutor(3, quorumCnxnThreadsSize, 60, TimeUnit.SECONDS,
@@ -490,7 +487,7 @@ public class QuorumCnxManager {
 
             String addr = addressesToSend.stream()
                     .map(NetUtils::formatInetAddr).collect(Collectors.joining("|"));
-            byte[] addr_bytes = addr.getBytes();
+            byte[] addr_bytes = addr.getBytes(UTF_8);
             dout.writeInt(addr_bytes.length);
             dout.write(addr_bytes);
             dout.flush();
